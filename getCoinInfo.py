@@ -15,9 +15,12 @@ def getCoinDF(market, timedelta, count,size):
 
     query = {"market":f"{market}", "count":f"{count}"}
 
-    response = requests.request("GET", url, params=query)
-
-    df = pd.read_json(response.text)
+    df = []
+    while True:
+        response = requests.request("GET", url, params=query)
+        if response.text != "Too many API requests." :
+            df = pd.read_json(response.text)
+            break
 
     while(len(df)<size):
         if len(df)%1000==0:
@@ -29,7 +32,6 @@ def getCoinDF(market, timedelta, count,size):
         querystring = {"market":f"{market}","count":f"{count}",'to':last}
 
         response = requests.request("GET", url, params=querystring)
-
         if response.text == "Too many API requests." :
             continue
 
